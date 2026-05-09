@@ -298,33 +298,6 @@ def write_analysis(
 
     analysis = f"""# Generated Results Analysis
 
-## Main Findings
-
-- For the 3-qubit code, tabular Q-learning is essentially competitive with the lookup decoder across the tested noise range. At `p = 0.05`, lookup reached `{p05_3_lookup:.3f}` mean success rate and Q-learning reached `{p05_3_q:.3f}`.
-- For the 9-qubit code, the same RL pipeline is still workable, but it is less stable because the syndrome space grows from 4 states to 256 states. At `p = 0.05`, lookup reached `{p05_9_lookup:.3f}` mean success rate and Q-learning reached `{p05_9_q:.3f}`.
-- The success-vs-noise curves show the expected monotone degradation as physical error rate increases. This supports the claim that the simulator is behaving consistently with the bit-flip noise model.
-
-## Strategy Comparison
-
-- On the 3-qubit code at `p = 0.05`, epsilon-greedy without shaping reached `{eps_3:.3f}`, epsilon-greedy with shaping reached `{shaping_3:.3f}`, and UCB reached `{ucb_3:.3f}`.
-- On the 9-qubit code at `p = 0.05`, epsilon-greedy without shaping reached `{eps_9:.3f}`, epsilon-greedy with shaping reached `{shaping_9:.3f}`, and UCB reached `{ucb_9:.3f}`.
-- Reward shaping does not clearly improve the mean success rate here, but it changes stability. In particular, the 9-qubit shaped runs have lower variance (`std = {shaping_9_std:.3f}`) than the plain epsilon-greedy runs (`std = {eps_9_std:.3f}`), whereas the 3-qubit shaped runs are actually less stable (`std = {shaping_3_std:.3f}` vs `std = {eps_3_std:.3f}`).
-- Under the current hyperparameters, UCB is weaker than epsilon-greedy on both code lengths. This suggests the implementation is more sensitive to insufficient visitation in larger tables than to undirected exploration noise.
-
-## Paper Framing
-
-- The strongest final-paper claim is not that RL beats the lookup decoder. The stronger and more defensible claim is that tabular RL can recover near-decoder-quality behavior on small repetition codes, while scaling to 9 qubits exposes the data-efficiency limits of naive tabular methods.
-- The 9-qubit extension is useful because it turns the project from a pure proof-of-concept into a scaling study. It gives you a concrete transition from a tiny interpretable MDP to a larger but still analyzable one.
-- In the discussion section, emphasize that the lookup decoder remains the oracle-like baseline for this hand-designed environment, while RL matters because it learns from interaction rather than from an explicit decoding rule.
-
-## Figures to Cite
-
-- `results/plots/paper_success_vs_error_rate.png`: main performance comparison across noise rates for 3 and 9 qubits.
-- `results/plots/paper_training_curves.png`: learning dynamics at `p = 0.05`.
-- `results/plots/paper_strategy_comparison.png`: effect of exploration strategy and reward shaping at `p = 0.05`.
-"""
-
-    (report_dir / "generated_results_analysis.md").write_text(analysis)
 
 
 def main() -> None:
