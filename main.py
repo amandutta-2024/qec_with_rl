@@ -27,6 +27,7 @@ from rl.q_learning import QLearningAgent, evaluate_policy, run_sweep, train_agen
 
 
 def build_parser() -> argparse.ArgumentParser:
+    """Build the command-line parser for baseline, training, and sweep runs."""
     parser = argparse.ArgumentParser(
         description="Tabular Q-learning for odd-length repetition codes."
     )
@@ -82,6 +83,7 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def command_baseline(args: argparse.Namespace) -> None:
+    """Run the fixed lookup decoder and print or save its metrics."""
     env = RepetitionCodeEnv(
         physical_error_rate=args.p,
         code_length=args.code_length,
@@ -114,6 +116,7 @@ def command_baseline(args: argparse.Namespace) -> None:
 
 
 def command_train(args: argparse.Namespace) -> None:
+    """Train a Q-learning decoder, evaluate it, and optionally save outputs."""
     train_env = RepetitionCodeEnv(
         physical_error_rate=args.p,
         code_length=args.code_length,
@@ -183,6 +186,7 @@ def command_train(args: argparse.Namespace) -> None:
 
 
 def command_sweep(args: argparse.Namespace) -> None:
+    """Compare lookup decoding and Q-learning across several noise levels."""
     rows = run_sweep(
         error_rates=args.error_rates,
         episodes=args.episodes,
@@ -224,6 +228,7 @@ def command_sweep(args: argparse.Namespace) -> None:
 
 
 def main() -> None:
+    """Parse CLI arguments and dispatch to the requested subcommand."""
     args = build_parser().parse_args()
     if args.command == "baseline":
         command_baseline(args)

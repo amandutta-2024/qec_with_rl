@@ -22,12 +22,14 @@ METRICS_FIELDNAMES = [
 
 
 def ensure_results_dirs() -> None:
+    """Create the output folders used by saved metrics, policies, and plots."""
     Path("results").mkdir(exist_ok=True)
     Path("results/policies").mkdir(exist_ok=True)
     Path("results/plots").mkdir(exist_ok=True)
 
 
 def print_policy(policy: Mapping[tuple[int, ...], int], code_length: int) -> None:
+    """Pretty-print a policy by syndrome and action name."""
     names = action_names(code_length)
     for syndrome in sorted(policy):
         action = policy[syndrome]
@@ -38,6 +40,7 @@ def print_policy(policy: Mapping[tuple[int, ...], int], code_length: int) -> Non
 
 
 def serialize_policy(policy: Mapping) -> Dict[str, object]:
+    """Convert tuple-keyed policies or tables into JSON-friendly dictionaries."""
     return {str(key): value for key, value in policy.items()}
 
 
@@ -52,6 +55,7 @@ def metrics_row(
     reward_shaping: bool,
     lookup_success_rate: float | None = None,
 ) -> Dict[str, object]:
+    """Pack one experiment result into the CSV row format used by the project."""
     # Keep every saved metric row in the same CSV shape, even if one field is blank.
     return {
         "mode": mode,
@@ -67,6 +71,7 @@ def metrics_row(
 
 
 def append_metrics_row(path: Path, row: Dict[str, object]) -> None:
+    """Append one metrics row to the CSV file, writing the header if needed."""
     write_header = not path.exists()
     with path.open("a", newline="") as handle:
         writer = csv.DictWriter(handle, fieldnames=METRICS_FIELDNAMES)
@@ -76,5 +81,6 @@ def append_metrics_row(path: Path, row: Dict[str, object]) -> None:
 
 
 def read_metrics(path: Path) -> Iterable[Dict[str, str]]:
+    """Read saved metrics rows back from a CSV file."""
     with path.open(newline="") as handle:
         yield from csv.DictReader(handle)

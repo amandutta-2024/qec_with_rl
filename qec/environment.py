@@ -37,6 +37,7 @@ class RepetitionCodeEnv:
     steps_taken: int = field(init=False, default=0)
 
     def __post_init__(self) -> None:
+        """Initialize RNG state and the clean starting error pattern."""
         validate_code_length(self.code_length)
         self.rng = random.Random(self.seed)
         if self.episode_length is None:
@@ -46,14 +47,17 @@ class RepetitionCodeEnv:
 
     @property
     def action_names(self) -> list[str]:
+        """Return the allowed action names for this environment size."""
         return action_names(self.code_length)
 
     def reset(self) -> Syndrome:
+        """Reset the environment to the clean state and return its syndrome."""
         self.errors = (0,) * self.code_length
         self.steps_taken = 0
         return syndrome_from_errors(self.errors)
 
     def step(self, action: int) -> dict[str, object]:
+        """Apply one correction action, then one round of physical noise."""
         if action not in range(len(self.action_names)):
             raise ValueError(f"Invalid action {action}.")
 

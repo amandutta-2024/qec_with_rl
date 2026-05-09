@@ -12,6 +12,7 @@ def best_action(
     syndrome: Tuple[int, int],
     rng: random.Random,
 ) -> int:
+    """Return a highest-value action, breaking ties at random."""
     values = q_table[syndrome]
     best_value = max(values)
     best_actions = [index for index, value in enumerate(values) if value == best_value]
@@ -24,6 +25,7 @@ def epsilon_greedy_action(
     epsilon: float,
     rng: random.Random,
 ) -> int:
+    """Choose a random action with probability epsilon, otherwise go greedy."""
     if rng.random() < epsilon:
         return rng.randrange(len(q_table[syndrome]))
     return best_action(q_table, syndrome, rng)
@@ -37,6 +39,7 @@ def ucb_action(
     ucb_c: float,
     rng: random.Random,
 ) -> int:
+    """Choose an action using an upper-confidence-bound exploration score."""
     total_visits = max(1, timestep)
     scores = []
     for action, value in enumerate(q_table[syndrome]):

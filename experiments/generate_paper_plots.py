@@ -37,6 +37,7 @@ WINDOW = 250
 
 
 def mean_std(values: Iterable[float]) -> Dict[str, float]:
+    """Compute the mean and sample standard deviation of a list of values."""
     data = list(values)
     mean = statistics.fmean(data)
     std = statistics.stdev(data) if len(data) > 1 else 0.0
@@ -44,12 +45,14 @@ def mean_std(values: Iterable[float]) -> Dict[str, float]:
 
 
 def confidence_radius(std: float, n: int) -> float:
+    """Return an approximate 95% confidence interval radius from std and n."""
     if n <= 1:
         return 0.0
     return 1.96 * std / math.sqrt(n)
 
 
 def aggregate_sweep() -> Dict[int, Dict[str, List[Dict[str, float]]]]:
+    """Run the main sweep and collect averaged lookup and Q-learning results."""
     results: Dict[int, Dict[str, List[Dict[str, float]]]] = {}
     for code_length in CODE_LENGTHS:
         lookup_rows: List[Dict[str, float]] = []
@@ -112,6 +115,7 @@ def aggregate_sweep() -> Dict[int, Dict[str, List[Dict[str, float]]]]:
 
 
 def training_curve(code_length: int, seed: int = 7) -> List[float]:
+    """Train one agent and record a moving success-rate curve over time."""
     env = RepetitionCodeEnv(
         physical_error_rate=0.05,
         code_length=code_length,
@@ -146,6 +150,7 @@ def training_curve(code_length: int, seed: int = 7) -> List[float]:
 
 
 def strategy_comparison() -> Dict[int, Dict[str, Dict[str, float]]]:
+    """Compare exploration and shaping choices at a fixed error rate."""
     configs = [
         ("epsilon_greedy", False, "epsilon"),
         ("epsilon_greedy", True, "epsilon_shaping"),
@@ -192,6 +197,7 @@ def strategy_comparison() -> Dict[int, Dict[str, Dict[str, float]]]:
 
 
 def plot_main_sweep(data: Dict[int, Dict[str, List[Dict[str, float]]]], output_dir: Path) -> None:
+    """Plot lookup and Q-learning success rates across the main error-rate sweep."""
     fig, axes = plt.subplots(1, 2, figsize=(10.6, 4.4), sharey=True)
     colors = {"lookup": "#1f77b4", "q_learning": "#d62728"}
     labels = {"lookup": "Lookup decoder", "q_learning": "Q-learning"}
@@ -220,6 +226,7 @@ def plot_main_sweep(data: Dict[int, Dict[str, List[Dict[str, float]]]], output_d
 
 
 def plot_training_curves(output_dir: Path) -> None:
+    """Plot training curves for the 3-qubit and 9-qubit settings."""
     fig, axes = plt.subplots(1, 2, figsize=(10.6, 4.4), sharey=True)
 
     for ax, code_length in zip(axes, CODE_LENGTHS):
@@ -239,6 +246,7 @@ def plot_training_curves(output_dir: Path) -> None:
 
 
 def plot_strategy_comparison(data: Dict[int, Dict[str, Dict[str, float]]], output_dir: Path) -> None:
+    """Plot the strategy ablation results as side-by-side bar charts."""
     fig, axes = plt.subplots(1, 2, figsize=(10.6, 4.4), sharey=True)
     order = ["epsilon", "epsilon_shaping", "ucb"]
     labels = ["eps-greedy", "eps-greedy + shaping", "ucb"]
@@ -265,6 +273,7 @@ def write_summary(
     strategy_data: Dict[int, Dict[str, Dict[str, float]]],
     output_dir: Path,
 ) -> None:
+    """Save the aggregated paper results as JSON for later reference."""
     summary = {"sweep": sweep_data, "strategy": strategy_data}
     (output_dir / "paper_results_summary.json").write_text(json.dumps(summary, indent=2))
 
@@ -273,6 +282,7 @@ def write_analysis(
     sweep_data: Dict[int, Dict[str, List[Dict[str, float]]]],
     strategy_data: Dict[int, Dict[str, Dict[str, float]]],
 ) -> None:
+    """Write a short Markdown summary of the paper's main findings."""
     report_dir = ROOT / "report"
 
     def row_at(code_length: int, p: float, model: str) -> Dict[str, float]:
@@ -301,6 +311,7 @@ def write_analysis(
 
 
 def main() -> None:
+    """Run all paper experiments, generate plots, and save summary files."""
     ensure_results_dirs()
     output_dir = ROOT / "results" / "plots"
     Path(os.environ["MPLCONFIGDIR"]).mkdir(parents=True, exist_ok=True)

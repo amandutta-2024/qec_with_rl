@@ -1,4 +1,4 @@
-"""Generate presentation-ready plots for the repetition-code project."""
+"""Generate plots for the repetition-code project."""
 
 from __future__ import annotations
 
@@ -31,6 +31,7 @@ def train_with_history(
     reward_shaping: bool,
     seed: int,
 ) -> Tuple[QLearningAgent, List[float]]:
+    """Train one agent and track a moving success-rate history."""
     env = RepetitionCodeEnv(
         physical_error_rate=physical_error_rate,
         use_reward_shaping=reward_shaping,
@@ -72,6 +73,7 @@ def sweep_results(
     reward_shaping: bool,
     seed: int,
 ) -> Dict[str, List[float]]:
+    """Run a small sweep and return lookup and Q-learning success curves."""
     lookup_scores: List[float] = []
     q_scores: List[float] = []
 
@@ -104,6 +106,7 @@ def sweep_results(
 
 
 def plot_success_vs_error_rate(output_dir: Path) -> None:
+    """Generate the presentation plot for decoder success versus noise rate."""
     error_rates = [0.01, 0.03, 0.05, 0.08, 0.10]
     results = sweep_results(
         error_rates=error_rates,
@@ -143,6 +146,7 @@ def plot_success_vs_error_rate(output_dir: Path) -> None:
 
 
 def plot_training_curve(output_dir: Path) -> None:
+    """Generate the presentation plot showing learning progress over time."""
     _, moving_success = train_with_history(
         physical_error_rate=0.05,
         episodes=8000,
@@ -169,6 +173,7 @@ def plot_training_curve(output_dir: Path) -> None:
 
 
 def plot_q_table_heatmap(output_dir: Path) -> None:
+    """Generate a heatmap of the learned 3-qubit Q-table."""
     agent, _ = train_with_history(
         physical_error_rate=0.05,
         episodes=12000,

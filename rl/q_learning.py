@@ -27,6 +27,7 @@ class QLearningAgent:
     rng: random.Random = field(init=False)
 
     def __post_init__(self) -> None:
+        """Initialize the Q-table and visit counters for every syndrome."""
         self.rng = random.Random(self.seed)
         syndromes = syndrome_labels(self.code_length)
         num_actions = len(action_names(self.code_length))
@@ -35,6 +36,7 @@ class QLearningAgent:
         self.visit_counts = {syndrome: [0] * num_actions for syndrome in syndromes}
 
     def choose_action(self, syndrome: Syndrome, timestep: int) -> int:
+        """Pick an action using the configured exploration strategy."""
         if self.exploration == "epsilon_greedy":
             return epsilon_greedy_action(self.q_table, syndrome, self.epsilon, self.rng)
         if self.exploration == "ucb":
@@ -56,6 +58,7 @@ class QLearningAgent:
         next_syndrome: Syndrome,
         done: bool,
     ) -> None:
+        """Apply one Q-learning update from a single transition."""
         self.visit_counts[syndrome][action] += 1
         best_next = 0.0 if done else max(self.q_table[next_syndrome])
         # Standard one-step Q-learning update.
@@ -64,6 +67,7 @@ class QLearningAgent:
         self.q_table[syndrome][action] += self.alpha * td_error
 
     def greedy_policy(self) -> Dict[Syndrome, int]:
+        """Convert the current Q-table into a deterministic greedy policy."""
         return {syndrome: best_action(self.q_table, syndrome, self.rng) for syndrome in self.q_table}
 
 
@@ -72,6 +76,7 @@ def train_agent(
     agent: QLearningAgent,
     episodes: int,
 ) -> Dict[str, object]:
+    """Train a Q-learning agent for a fixed number of episodes."""
     successes = 0
     rewards: List[float] = []
     global_timestep = 1
@@ -112,6 +117,7 @@ def evaluate_policy(
     policy: Dict[Syndrome, int],
     episodes: int,
 ) -> Dict[str, float]:
+    """Run a fixed policy without learning and report its average performance."""
     successes = 0
     total_reward = 0.0
 
@@ -145,6 +151,7 @@ def run_sweep(
     code_length: int,
     seed: Optional[int],
 ) -> List[Dict[str, float]]:
+    """Run the lookup baseline and Q-learning across several error rates."""
     rows: List[Dict[str, float]] = []
     for index, error_rate in enumerate(error_rates):
         base_seed = None if seed is None else seed + index * 1000

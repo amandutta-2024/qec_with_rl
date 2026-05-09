@@ -20,6 +20,7 @@ from qec.utils import ensure_results_dirs, read_metrics
 
 
 def main() -> None:
+    """Load saved sweep metrics and plot success rate versus error rate."""
     parser = argparse.ArgumentParser(description="Analyze saved experiment metrics.")
     parser.add_argument("--input", type=Path, default=Path("results/metrics.csv"))
     parser.add_argument("--output", type=Path, default=Path("results/plots/success_vs_p.png"))

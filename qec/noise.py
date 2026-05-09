@@ -11,6 +11,7 @@ def bit_flip_noise(
     physical_error_rate: float,
     rng: random.Random,
 ) -> Tuple[int, ...]:
+    """Apply independent bit-flip noise to each qubit in the error pattern."""
     updated = list(errors)
     for qubit in range(len(updated)):
         # Each qubit flips independently with probability p.
@@ -23,6 +24,7 @@ def sample_depolarizing_pauli(
     physical_error_rate: float,
     rng: random.Random,
 ) -> Tuple[str, str, str]:
+    """Sample a simple three-qubit Pauli error pattern for extension work."""
     paulis = []
     for _ in range(3):
         if rng.random() >= physical_error_rate:
